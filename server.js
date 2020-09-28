@@ -99,6 +99,7 @@ app.post("/api/notes", function(req, res) {
 // ============================================================= 
 // Delete Note from Array
 // =============================================================
+//random comment
 app.delete("/api/notes/:id", function(req, res) {
     //opens the json file and holds it in the data variable. Error variable will catch the errors
     fs.readFile(__dirname +"/db/db.json", "utf8", function(error, data) {
