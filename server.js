@@ -111,9 +111,16 @@ app.delete("/api/notes/:id", function(req, res) {
              note.id != req.params.id;
           });
           res.json(storedNotes)
+          storedNotes= JSON.stringify(storedNotes);
+          stringArray = JSON.stringify(storedNotes)
+          fs.writeFile(__dirname +"/db/db.json",stringArray, "utf8", function(error, data) {
+            if (error) {
+                  return console.log(error);
+                }
+            });
 
         });
-          notesData = JSON.stringify(notesData);
+          
 });
 
 // ============================================================= 
