@@ -107,25 +107,13 @@ app.delete("/api/notes/:id", function(req, res) {
             return console.log(error);
           }
           storedNotes = JSON.parse(data)
-
-          res.json(storedNotes)
-        });
-          //reads data from json file and turns it in JS object. A js Object is needed to be interpreted by the browser
-          storedNotes = JSON.parse(data)
-          //prints result from json file in the node cli
-          console.log(storedNotes);
           storedNotes = storedNotes.filter(function(note) {
-            return note.id != req.params.id;
+             note.id != req.params.id;
           });
-          // make it string(stringify)so you can write it to the file
+          res.json(storedNotes)
+
+        });
           notesData = JSON.stringify(notesData);
-          // write the new notes to the file
-          fs.writeFile("./db/db.json", notesData, "utf8", function(err) {
-            // error handling
-            if (err) throw err;
-          });
-          //posts json file to browser and postman
-          
 });
 
 // ============================================================= 
