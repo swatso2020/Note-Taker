@@ -42,16 +42,9 @@ app.get("/api/notes", function(req, res) {
         if (error) {
               return console.log(error);
             }
-           
-            console.log(data)
-            //reads data from json file and turns it in JS object. A js Object is needed to be interpreted by the browser
+            //contents in the db file is saved as a string. Taking it out, turning it into an array of objects then storing it in the stored notes variable
             storedNotes = JSON.parse(data)
-            console.log(storedNotes);
-            req.body.id = storedNotes.length;
-
-            //prints result from json file in the node cli
-            
-            //posts json file to browser and postman
+            //returns the json of the storedNotes array when api is called
             res.json(storedNotes)
           });
   });
@@ -65,30 +58,28 @@ app.post("/api/notes", function(req, res) {
     // the body had sample data
     //     opens the json file and holds it in the data variable. Error variable will catch the errors
         fs.readFile(__dirname +"/db/db.json", "utf8",function(error, data){
-             //printing contents of  db file to text editor console 
-            console.log(data)
-            //storing contents of db file to storedNotes array and turining it into an object
-            storedNotes = JSON.parse(data)
-              //responding with the a json object that has the contents of the db file  shows in the browser
-              
-              //Turning the db file object into a text string so it can be console.log
-              console.log("This is the turning the stored notes object into a string:"+JSON.stringify(storedNotes))
+          if (error) {
+            return console.log(error);
+          }
               //I a variable to store new notes
               let newNote= req.body
-              //setting the newNote object to store req.body
-            
-             
+              //setting number to the uniqueID variable. It will use its postion in the array to set the number.The number will be transformed to text
+              let uniqueID = (storedNotes.length).toString()
+              //extending the id to the newNOte object
+              newNote.id = uniqueID
               //printing the string version of the new note
               console.log("this is whats stored in the new note from the req.body "+JSON.stringify(newNote))
 
-              // I want new notes to added to the storedNotes array
+              // this will add the new note object to the array
               storedNotes.push(newNote)
               //printing the storedNotes array with the new note added
               console.log("This is the StoredNotes array with the new note added"+ JSON.stringify(storedNotes))
               //responsing to the api call with a json object to browser. This will have the new note. You can only res.json once, becasue this is sending the response to the client 
               res.json(newNote)
 
+              //transforming the stored notes to stringarray as text 
               stringArray = JSON.stringify(storedNotes)
+              //saving the the variable to the db.json file
                 fs.writeFile(__dirname +"/db/db.json",stringArray, "utf8", function(error, data) {
                   if (error) {
                       return console.log(error);
@@ -107,12 +98,18 @@ app.delete("/api/notes/:id", function(req, res) {
       if (error) {
             return console.log(error);
           }
+          //taking the string from the json file and putting it in the stored notes variable
           storedNotes = JSON.parse(data)
+          //uses the array method filter to find the object with the id passed through the parmaters
           storedNotes = storedNotes.filter(function(note) {
+          //this will return all notes that do not match the id of what was passed in the parmaeters
             return note.id != req.params.id;
           });
+          // responds with the remaining notes
           res.json(storedNotes)
+          //turnes remaing notes into string to be saved to db.json
           stringArray = JSON.stringify(storedNotes)
+
           fs.writeFile(__dirname +"/db/db.json",stringArray, "utf8", function(error, data) {
             if (error) {
                   return console.log(error);
