@@ -64,38 +64,39 @@ app.post("/api/notes", function(req, res) {
     // This works because of our body parsing middleware
     // the body had sample data
     //     opens the json file and holds it in the data variable. Error variable will catch the errors
-        fs.readFileSync(__dirname +"/db/db.json", "utf8",function(error, data){
+        fs.readFile(__dirname +"/db/db.json", "utf8",function(error, data){
+             //printing contents of  db file to text editor console 
+            console.log(data)
+            //storing contents of db file to storedNotes array and turining it into an object
             storedNotes = JSON.parse(data)
-             if (error) {
-                  return console.log(error);
-                }
-        })        
-                //stores data from the body of the browser or postman request
-                var newNote = req.body;
+              //responding with the a json object that has the contents of the db file  shows in the browser
+              
+              //Turning the db file object into a text string so it can be console.log
+              console.log("This is the turning the stored notes object into a string:"+JSON.stringify(storedNotes))
+              //I a variable to store new notes
+              let newNote= req.body
+              //setting the newNote object to store req.body
+            
+             
+              //printing the string version of the new note
+              console.log("this is whats stored in the new note from the req.body "+JSON.stringify(newNote))
 
-                //set id for new notes
-                let uniqueID = (storedNotes.length).toString();
-                newNote.id = uniqueID;
+              // I want new notes to added to the storedNotes array
+              storedNotes.push(newNote)
+              //printing the storedNotes array with the new note added
+              console.log("This is the StoredNotes array with the new note added"+ JSON.stringify(storedNotes))
+              //responsing to the api call with a json object to browser. This will have the new note. You can only res.json once, becasue this is sending the response to the client 
+              res.json(newNote)
 
-                   //prints newly added note to the node cli
-                    console.log("this is the note you added db.json. Content  ")
-                    console.log(newNote);
-
-                // We then display the JSON to the users
-                    res.json(storedNotes);
-                //pushes the new note from postman body or user input
-                storedNotes.push(newNote)
-                console.log(storedNotes)
-
-                
-                stringArray = JSON.stringify(storedNotes)
-                console.log(stringArray)
+              stringArray = JSON.stringify(storedNotes)
                 fs.writeFile(__dirname +"/db/db.json",stringArray, "utf8", function(error, data) {
-                    if (error) {
-                          return console.log(error);
-                        }
-                    }); 
-});
+                  if (error) {
+                      return console.log(error);
+                    }
+                });
+                })
+              })
+
 // ============================================================= 
 // Delete Note from Array
 // =============================================================
@@ -108,10 +109,9 @@ app.delete("/api/notes/:id", function(req, res) {
           }
           storedNotes = JSON.parse(data)
           storedNotes = storedNotes.filter(function(note) {
-             note.id != req.params.id;
+            return note.id != req.params.id;
           });
           res.json(storedNotes)
-          storedNotes= JSON.stringify(storedNotes);
           stringArray = JSON.stringify(storedNotes)
           fs.writeFile(__dirname +"/db/db.json",stringArray, "utf8", function(error, data) {
             if (error) {
